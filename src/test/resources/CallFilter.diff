@@ -1,0 +1,30 @@
+--- CallFilter.java	2015-07-15 17:50:02.092203952 -0300
++++ CallFilterNew.java	2015-07-15 17:49:59.120203972 -0300
+@@ -13,14 +13,22 @@
+     public List<CallDTO> filterAndConvertCalls(List<Call> calls) {
+         List<CallDTO> filteredCalls = new ArrayList<>();
+         for (Call call : calls) {
+-            if (call.isHang() && call.isClosed()) {
+-                CallDTO dto = new CallDTO();
+-                converted.id = call.id
+-                converted.date = call.date
+-                filteredCalls.add(dto);
++            if (isValid(call)) {
++                filteredCalls.add( convertToDto(dto) );
+             }
+         }
+         return filteredCalls;
+     }
+     
++    boolean isValid(Call call) {
++        return call.isHang() && call.isClosed();
++    }
++    
++    CallDTO convertToDto(Call call) {
++        CallDTO dto = new CallDTO();
++        converted.id = call.id;
++        converted.date = call.date;
++        return dto;
++    }
++    
+ }
