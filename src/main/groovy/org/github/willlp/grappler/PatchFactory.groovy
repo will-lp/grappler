@@ -7,7 +7,7 @@ class PatchFactory {
     private PatchFactory() {}
     
     static from(File file) {
-        assert false, 'not implemented'
+        from file.text
     }
     
     static from(String content) {

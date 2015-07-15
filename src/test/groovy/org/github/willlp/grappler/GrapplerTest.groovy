@@ -1,8 +1,11 @@
 package org.github.willlp.grappler
 
-class Test extends GroovyTestCase {
+import org.junit.Test
+
+class GrapplerTest {
     
-    def 'test simple patch' () {
+	@Test
+    void 'test simple patch' () {
         def raw = '''\
 Index: file/test.txt
 ==================================================================
@@ -13,7 +16,7 @@ Index: file/test.txt
 +www
 '''
         
-        def patch = PatchParser.from(raw)
+        def patch = PatchFactory.from raw
         assert patch instanceof Patch
         assert patch.files.size() == 1
         
@@ -29,7 +32,8 @@ ccc'''
     }
     
     
-    def 'test file patch' () {
+    @Test
+    void 'test file patch' () {
         def diff = new File('resources/CallFilter.diff')
         def origin = new File('resources/CallFilter.java')
         def result = new File('resources/CallFilterPatched.java')
@@ -42,7 +46,8 @@ ccc'''
     }
     
     
-    def 'test unmatched conflict' () {
+    @Test
+    void 'test unmatched conflict' () {
         def raw = '''\
 Index: file/alfabetacharlie.txt
 ==================================================================
