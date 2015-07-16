@@ -4,7 +4,6 @@ import org.junit.Test
 
 class GrapplerTest {
 	
-	
 	@Test void 'test simple patch' () {
         def raw = '''\
 Index: file/test.txt
