@@ -11,7 +11,7 @@ class PatchFactory {
     }
     
     static from(String content) {
-        new PatchFactory(content: content).parse()
+        new PatchParser().parse content
     }
     
 }

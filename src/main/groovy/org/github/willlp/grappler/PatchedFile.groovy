@@ -1,9 +1,6 @@
 package org.github.willlp.grappler
 
-class PatchFile {
+class PatchedFile {
     String name
     List<Modification> modifications = []
-    
-    File file
-    String content
 }

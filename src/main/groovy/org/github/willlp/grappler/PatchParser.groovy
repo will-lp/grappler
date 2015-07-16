@@ -4,15 +4,17 @@ package org.github.willlp.grappler
  * Currently SVN format only
  *
  */
+@groovy.util.logging.Log4j2
 class PatchParser {
 	
 	enum Token {
-		INDEX(/^Index: .*/),
-		ADDED(/^\+.*/), 
-		BEGIN_MODIFICATION(/^@@.*/), 
-		REMOVED(/^-.*/)
-		
-		String regex
+		INDEX        (/^Index: .*/), 
+		SEPARATOR    ( /^==================.*/ ), 
+		FILE_REMOVED ( /^\+{3} .*/ ),
+		FILE_ADDED   ( /^--- .*/ ),
+		BEGIN_MODIFICATION( /^@@.*/ )
+		                     
+		private String regex;
 		Token(String regex) { this.regex = regex }
 		
 		static Token match(String line) {
@@ -20,36 +22,51 @@ class PatchParser {
 		}
 	}
 	
-	PatchFile parse(String content) {
-		def file = new PatchFile()
-		content.eachLine { line
+	Patch parse(String content) {
+		
+		Patch patch = new Patch(content: content)
+		PatchedFile file
+		Token lastToken
+		Modification modification
+		
+		content.eachLine { line ->
 			def token = Token.match line
-			def modification
 			
-			name
-			modifications
-			file
-			content
+			lastToken = (token == null) ? lastToken : token
 			
 			def lambda = [
 				(Token.INDEX) : {
-					file.name = line - "Index: "
+					file = new PatchedFile(name: (line - "Index: "))
+					patch.files << file
 				},
-				(Token.ADDED) : {
-					
+				(Token.SEPARATOR) : {
+					// ignore
 				},
-				(Token.REMOVED) : {
+				(Token.FILE_ADDED) : {
+					// what to do?
+				},
+				(Token.FILE_REMOVED) : {
+					// what to do?
 				},
 				(Token.BEGIN_MODIFICATION) : {
+					modification = new Modification()
+					file.modifications << modification
 				}
 			][token]
 			
 			if (!lambda) {
-				assert false, "No matching token for line '$line'"
+				if (lastToken == Token.BEGIN_MODIFICATION) {
+					modification.lines << line
+				}
+			} else {
+				lambda()
 			}
+			
+			log.error "parsed '$line' as '$token', lastToken='$lastToken', modification='$modification'"
 		}
+		
+		return patch
 	}
-	
 	
 	/*
 Index: file/test.txt
@@ -57,8 +74,9 @@ Index: file/test.txt
 --- file/test.txt (revision 1)
 +++ file/test.txt (revision 2)
 @@ -2,1 +2,1 @@
+aaa
 -bbb
 +www
 	 */
-	
+	 
 }

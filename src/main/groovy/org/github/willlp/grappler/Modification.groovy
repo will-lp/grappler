@@ -7,7 +7,10 @@ class Modification {
 	
 	def matcher = [
 		added : { it ==~ /^\+.*/ },
-		removed : { it ==~ /^-.*/ } 
+		removed : { it ==~ /^-.*/ },
+		filterAndStrip : { Closure closure -> 
+			lines.findAll closure collect { it[1..-1] } 
+		}
 	]
 	
 	List<String> getLinesBefore() {
@@ -21,10 +24,11 @@ class Modification {
 	}
 	
 	List<String> getLinesAdded() {
-		lines.findAll matcher.added
+		matcher.filterAndStrip matcher.added
 	}
 	
 	List<String> getLinesRemoved() {
-		lines.findAll matcher.removed
+		matcher.filterAndStrip matcher.removed
 	}
+	
 }
